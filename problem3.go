@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 /* Okay, some notes. Go is entirely 'pass-by-value', which means that
 variables passed to another function are copied. So this code makes sense:
@@ -29,36 +32,35 @@ func main() {
 // Problem 3: What is the largest prime factor of the number 600851475143?
 func main() {
 	x := 600851475143
-	fmt.Println(getMax(getPrimes(factorize(x))))
-}
-
-func getPrimes(candidates []int) []int {
-	primes := []int{}
-	for _, val := range candidates {
-		if len(factorize(val)) == 2 {
-			primes = append(primes, val)
+	// Since we are starting from the highest possible prime, we don't have
+	// to do the whole 'find the max in this list' thing
+	for i := sqrt(x); i >= 1; i-- {
+		if x%i == 0 && isPrime(i) {
+			fmt.Println(i)
+			break
 		}
 	}
-	return primes
 }
 
-func factorize(number int) []int {
-	factors := []int{1, number}
-	iterator := number/2 + 1
-	for i := 2; i <= iterator; i++ {
-		if number%i == 0 {
-			factors = append(factors, i)
+func isPrime(candidate int) bool {
+	if candidate <= 1 {
+		return false
+	}
+
+	// This is really smart. Different algorithm starts from the highest possible
+	// prime and counts down - prevents a lot of time being wasted.
+	for i := sqrt(candidate); i >= 1; i-- {
+		if i == 1 {
+			return true
+		}
+
+		if candidate%i == 0 {
+			return false
 		}
 	}
-	return factors
+	return true
 }
 
-func getMax(list []int) int {
-	max := list[0]
-	for _, val := range list {
-		if val > max {
-			max = val
-		}
-	}
-	return max
+func sqrt(a int) int {
+	return int(math.Sqrt(float64(a)))
 }
